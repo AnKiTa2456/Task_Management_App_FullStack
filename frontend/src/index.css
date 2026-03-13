@@ -12,6 +12,10 @@
     font-family: 'Inter', ui-sans-serif, system-ui;
   }
 
+  .dark body {
+    @apply bg-slate-900 text-slate-100;
+  }
+
   #root {
     width: 100%;
     min-height: 100vh;
@@ -22,18 +26,19 @@
 
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { @apply bg-transparent; }
-  ::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded-full; }
-  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-300 dark:bg-slate-600 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400 dark:bg-slate-500; }
 }
 
 @layer components {
   .kanban-column {
-    @apply flex-shrink-0 w-72 bg-slate-100 rounded-xl p-3 flex flex-col gap-2;
+    @apply flex-shrink-0 w-72 bg-slate-100 dark:bg-slate-800 rounded-xl p-3 flex flex-col gap-2;
   }
 
   .task-card {
-    @apply bg-white rounded-lg p-3 shadow-card hover:shadow-card-hover
-           transition-shadow duration-200 cursor-pointer border border-slate-100;
+    @apply bg-white dark:bg-slate-700 rounded-lg p-3 shadow-card hover:shadow-card-hover
+           transition-shadow duration-200 cursor-pointer
+           border border-slate-100 dark:border-slate-600;
   }
 
   .sidebar-link {
@@ -47,6 +52,7 @@
   }
 
   .stat-card {
-    @apply bg-white rounded-xl p-5 shadow-card border border-slate-100;
+    @apply bg-white dark:bg-slate-800 rounded-xl p-5 shadow-card
+           border border-slate-100 dark:border-slate-700;
   }
 }

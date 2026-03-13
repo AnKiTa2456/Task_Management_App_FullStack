@@ -45,8 +45,8 @@ function BoardsView() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-800">My Boards</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">My Boards</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
             {boards.length} board{boards.length !== 1 ? 's' : ''}
           </p>
         </div>
@@ -62,10 +62,10 @@ function BoardsView() {
       )}
 
       {!isError && boards.length === 0 && (
-        <div className="flex flex-col items-center justify-center h-52 bg-white rounded-xl border border-dashed border-slate-200">
-          <LayoutGrid size={32} className="text-slate-300 mb-3" />
-          <p className="text-sm font-medium text-slate-500">No boards yet</p>
-          <p className="text-xs text-slate-400 mt-1">Create your first board to get started</p>
+        <div className="flex flex-col items-center justify-center h-52 bg-white dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+          <LayoutGrid size={32} className="text-slate-300 dark:text-slate-600 mb-3" />
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">No boards yet</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Create your first board to get started</p>
           <Button size="sm" className="mt-4" onClick={() => setCreateOpen(true)}>
             Create board
           </Button>
@@ -229,8 +229,8 @@ function KanbanView({ boardId }: { boardId: string }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-bold text-slate-800">{board.name}</h1>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">{board.name}</h1>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
             {totalTasks} task{totalTasks !== 1 ? 's' : ''} · {columns.length} column{columns.length !== 1 ? 's' : ''}
           </p>
         </div>
@@ -260,8 +260,8 @@ function KanbanView({ boardId }: { boardId: string }) {
           ))}
           <button
             onClick={() => setAddColOpen(true)}
-            className="flex-shrink-0 w-72 h-12 border-2 border-dashed border-slate-200 rounded-xl
-                       flex items-center justify-center gap-2 text-sm text-slate-400
+            className="flex-shrink-0 w-72 h-12 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl
+                       flex items-center justify-center gap-2 text-sm text-slate-400 dark:text-slate-500
                        hover:border-brand-400 hover:text-brand-500 transition-colors self-start"
           >
             <Plus size={16} /> Add column

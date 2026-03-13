@@ -12,7 +12,7 @@ import { toggleSidebar }   from '../../features/ui/uiSlice';
 const NAV = [
   { to: '/dashboard',   icon: LayoutDashboard, label: 'Dashboard'  },
   { to: '/boards',      icon: Layers,           label: 'Boards'     },
-  { to: '/board/demo',  icon: Trello,           label: 'Kanban'     },
+  { to: '/board/board-1', icon: Trello,           label: 'Kanban'     },
   { to: '/team',        icon: Users,            label: 'Team'       },
   { to: '/settings',    icon: Settings,         label: 'Settings'   },
 ];
@@ -31,14 +31,15 @@ export default function Sidebar() {
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 z-30 h-full bg-white border-r border-slate-100',
+        'fixed left-0 top-0 z-30 h-full border-r',
+        'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700',
         'flex flex-col transition-all duration-300 shadow-sm',
         sidebarOpen ? 'w-60' : 'w-16',
       )}
     >
       {/* Logo */}
       <div className={cn(
-        'flex items-center h-16 px-4 border-b border-slate-100 flex-shrink-0',
+        'flex items-center h-16 px-4 border-b border-slate-100 dark:border-slate-700 flex-shrink-0',
         sidebarOpen ? 'justify-between' : 'justify-center',
       )}>
         {sidebarOpen && (
@@ -46,12 +47,12 @@ export default function Sidebar() {
             <div className="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
               <Trello size={14} className="text-white" />
             </div>
-            <span className="font-bold text-slate-800 text-sm">TaskFlow</span>
+            <span className="font-bold text-slate-800 dark:text-slate-100 text-sm">TaskFlow</span>
           </div>
         )}
         <button
           onClick={() => dispatch(toggleSidebar())}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
         >
           <ChevronLeft
             size={16}
@@ -61,7 +62,7 @@ export default function Sidebar() {
       </div>
 
       {/* New Task Button */}
-      <div className="px-3 py-3 border-b border-slate-100">
+      <div className="px-3 py-3 border-b border-slate-100 dark:border-slate-700">
         <button
           className={cn(
             'w-full flex items-center gap-2 bg-brand-600 text-white text-sm font-medium',
@@ -82,9 +83,9 @@ export default function Sidebar() {
             to={to}
             className={({ isActive }) =>
               cn(
-                'sidebar-link',
+                'sidebar-link dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-brand-400',
                 sidebarOpen ? '' : 'justify-center px-0',
-                isActive && 'active',
+                isActive && 'active dark:!bg-brand-900/40 dark:!text-brand-400',
               )
             }
             title={!sidebarOpen ? label : undefined}
@@ -97,20 +98,20 @@ export default function Sidebar() {
 
       {/* User profile */}
       <div className={cn(
-        'px-3 py-3 border-t border-slate-100 flex items-center gap-3',
+        'px-3 py-3 border-t border-slate-100 dark:border-slate-700 flex items-center gap-3',
         !sidebarOpen && 'justify-center',
       )}>
         {user && <Avatar name={user.name} src={user.avatarUrl} size="sm" />}
         {sidebarOpen && user && (
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-slate-700 truncate">{user.name}</p>
-            <p className="text-xs text-slate-400 truncate">{user.email}</p>
+            <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">{user.name}</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 truncate">{user.email}</p>
           </div>
         )}
         {sidebarOpen && (
           <button
             onClick={handleLogout}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
             title="Logout"
           >
             <LogOut size={15} />

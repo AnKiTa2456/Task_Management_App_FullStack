@@ -57,7 +57,7 @@ export default function TaskCard({ task }: TaskCardProps) {
       </div>
 
       {/* Title */}
-      <p className="text-sm font-medium text-slate-800 leading-snug mb-2 line-clamp-2">
+      <p className="text-sm font-medium text-slate-800 dark:text-slate-100 leading-snug mb-2 line-clamp-2">
         {task.title}
       </p>
 
@@ -77,7 +77,7 @@ export default function TaskCard({ task }: TaskCardProps) {
 
       {/* Footer */}
       <div className="flex items-center justify-between mt-2">
-        <div className="flex items-center gap-2 text-slate-400">
+        <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500">
           {task.comments.length > 0 && (
             <span className="flex items-center gap-0.5 text-xs">
               <MessageSquare size={12} />
