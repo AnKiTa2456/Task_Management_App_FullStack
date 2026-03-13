@@ -176,7 +176,7 @@ function mockGetBoard(boardId: string): Promise<Board> {
   return new Promise((resolve, reject) =>
     setTimeout(() => {
       const board = MOCK_BOARDS.find(b => b.id === boardId);
-      board ? resolve(board) : reject(new Error('Board not found'));
+      if (board) { resolve(board); } else { reject(new Error('Board not found')); }
     }, 400),
   );
 }
