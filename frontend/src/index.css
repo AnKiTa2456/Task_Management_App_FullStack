@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+
+  body {
+    @apply bg-slate-50 text-slate-800 antialiased;
+    font-family: 'Inter', ui-sans-serif, system-ui;
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    text-align: left;
+    border: none;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400; }
+}
+
+@layer components {
+  .kanban-column {
+    @apply flex-shrink-0 w-72 bg-slate-100 rounded-xl p-3 flex flex-col gap-2;
+  }
+
+  .task-card {
+    @apply bg-white rounded-lg p-3 shadow-card hover:shadow-card-hover
+           transition-shadow duration-200 cursor-pointer border border-slate-100;
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500
+           hover:bg-brand-50 hover:text-brand-600 transition-colors duration-150
+           text-sm font-medium;
+  }
+
+  .sidebar-link.active {
+    @apply bg-brand-50 text-brand-600;
+  }
+
+  .stat-card {
+    @apply bg-white rounded-xl p-5 shadow-card border border-slate-100;
+  }
+}
