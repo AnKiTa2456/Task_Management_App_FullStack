@@ -14,6 +14,8 @@ A production-ready, full-stack Task Management application built with **React**,
 
 ## Screenshots
 
+
+
 | Login | Dashboard | Kanban Board |
 |-------|-----------|--------------|
 | ![Login](https://placehold.co/300x200?text=Login+Page) | ![Dashboard](https://placehold.co/300x200?text=Dashboard) | ![Kanban](https://placehold.co/300x200?text=Kanban+Board) |
