@@ -1,79 +1,159 @@
-import axios from 'axios';
-import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { store }     from '../app/store';
-import { setAccessToken, logout } from '../features/auth/authSlice';
+import axios from "axios";
+import type { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { store } from "../app/store";
+import { setAccessToken, logout } from "../features/auth/authSlice";
+
+/* ------------------------------------------------------- */
+/* Types */
+/* ------------------------------------------------------- */
 
 interface RetryConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
 }
 
+/* ------------------------------------------------------- */
+/* Token refresh queue */
+/* ------------------------------------------------------- */
+
 let isRefreshing = false;
-let failedQueue: { resolve: (t: string) => void; reject: (e: unknown) => void }[] = [];
+
+let failedQueue: {
+  resolve: (token: string) => void;
+  reject: (error: unknown) => void;
+}[] = [];
 
 function processQueue(error: unknown, token: string | null) {
-  failedQueue.forEach(({ resolve, reject }) => error ? reject(error) : resolve(token!));
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token!);
+    }
+  });
+
   failedQueue = [];
 }
 
-/** Call this on logout so the next login request is never stuck in the queue. */
-export function resetInterceptorState() {
-  processQueue(new Error('Logged out'), null);
-  isRefreshing = false;
-}
+/* ------------------------------------------------------- */
+/* Force logout */
+/* ------------------------------------------------------- */
 
 function forceLogout() {
   store.dispatch(logout());
-  window.location.href = '/login';
+  window.location.href = "/login";
 }
 
+/* ------------------------------------------------------- */
+/* API URL */
+/* ------------------------------------------------------- */
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.DEV
+    ? "http://localhost:3000/api/v1"
+    : "https://task-management-app-fullstack.onrender.com/api/v1");
+
+/* ------------------------------------------------------- */
+/* Axios Instance */
+/* ------------------------------------------------------- */
+
 export const apiClient = axios.create({
-  baseURL:         import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api/v1',
-  timeout:         15_000,
+  baseURL: API_BASE_URL,
+  timeout: 15000,
   withCredentials: true,
-  headers:         { 'Content-Type': 'application/json' },
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-apiClient.interceptors.request.use((config) => {
-  const token = store.getState().auth.accessToken;
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+/* ------------------------------------------------------- */
+/* Request Interceptor */
+/* Attach Access Token */
+/* ------------------------------------------------------- */
+
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = store.getState().auth.accessToken;
+
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+/* ------------------------------------------------------- */
+/* Response Interceptor */
+/* Handle Token Refresh */
+/* ------------------------------------------------------- */
 
 apiClient.interceptors.response.use(
-  response => response,
-  async (error: AxiosError) => {
-    const original = error.config as RetryConfig | undefined;
+  (response) => response,
 
-    if (!original || error.response?.status !== 401 || original._retry) {
-      // Retry-after-refresh also got 401 → session fully invalid, kick to login
-      if (original?._retry && error.response?.status === 401) {
-        forceLogout();
-      }
+  async (error: AxiosError) => {
+    const originalRequest = error.config as RetryConfig | undefined;
+
+    if (!originalRequest) {
       return Promise.reject(error);
     }
+
+    /* ------------------------------ */
+    /* If not 401 → reject normally */
+    /* ------------------------------ */
+
+    if (error.response?.status !== 401 || originalRequest._retry) {
+      if (originalRequest._retry && error.response?.status === 401) {
+        forceLogout();
+      }
+
+      return Promise.reject(error);
+    }
+
+    /* ------------------------------ */
+    /* If refresh already running */
+    /* ------------------------------ */
 
     if (isRefreshing) {
       return new Promise((resolve, reject) => {
         failedQueue.push({
-          resolve: (token) => {
-            original.headers!.Authorization = `Bearer ${token}`;
-            resolve(apiClient(original));
+          resolve: (token: string) => {
+            originalRequest.headers!.Authorization = `Bearer ${token}`;
+            resolve(apiClient(originalRequest));
           },
           reject,
         });
       });
     }
 
-    original._retry = true;
-    isRefreshing    = true;
+    /* ------------------------------ */
+    /* Start Refresh Flow */
+    /* ------------------------------ */
+
+    originalRequest._retry = true;
+    isRefreshing = true;
 
     try {
-      const { data } = await apiClient.post<{ data: { accessToken: string } }>('/auth/refresh');
-      const newToken = data.data.accessToken;
+      const response = await axios.post(
+        `${API_BASE_URL}/auth/refresh`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
+      const newToken = response.data.data.accessToken;
+
       store.dispatch(setAccessToken(newToken));
+
       processQueue(null, newToken);
-      original.headers!.Authorization = `Bearer ${newToken}`;
-      return apiClient(original);
+
+      if (originalRequest.headers) {
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+      }
+
+      return apiClient(originalRequest);
     } catch (refreshError) {
       processQueue(refreshError, null);
       forceLogout();
@@ -81,5 +161,14 @@ apiClient.interceptors.response.use(
     } finally {
       isRefreshing = false;
     }
-  },
+  }
 );
+
+/* ------------------------------------------------------- */
+/* Reset interceptor state on logout */
+/* ------------------------------------------------------- */
+
+export function resetInterceptorState() {
+  processQueue(new Error("Logged out"), null);
+  isRefreshing = false;
+}
