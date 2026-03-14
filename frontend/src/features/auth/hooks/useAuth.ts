@@ -1,9 +1,10 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import toast           from 'react-hot-toast';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { setCredentials, logout as logoutAction } from '../authSlice';
 import { authApi } from '../../../services/api';
+import { resetInterceptorState } from '../../../lib/axios';
 import type { LoginDto, RegisterDto, AuthResponse } from '../../../types';
 
 // ── Mock mode (works without a backend) ──────────────────────────────────────
@@ -53,9 +54,10 @@ function mockLogin(dto: LoginDto): Promise<AuthResponse> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function useAuth() {
-  const dispatch  = useAppDispatch();
-  const navigate  = useNavigate();
-  const authState = useAppSelector(s => s.auth);
+  const dispatch    = useAppDispatch();
+  const navigate    = useNavigate();
+  const queryClient = useQueryClient();
+  const authState   = useAppSelector(s => s.auth);
 
   const loginMutation = useMutation({
     mutationFn: (dto: LoginDto) =>
@@ -94,6 +96,8 @@ export function useAuth() {
   });
 
   const logout = () => {
+    resetInterceptorState();          // flush any in-flight refresh queue
+    queryClient.clear();              // drop all cached queries so stale data isn't re-used
     if (!MOCK_AUTH) authApi.logout().catch(() => null);
     dispatch(logoutAction());
     navigate('/login');

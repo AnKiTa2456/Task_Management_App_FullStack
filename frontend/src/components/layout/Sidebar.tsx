@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Trello, Users, Settings,
-  LogOut, ChevronLeft, Plus, Layers,
+  LogOut, ChevronLeft, Plus, Clock, Calendar,
+  StickyNote, BookOpen, Zap, Target, MessageSquare,
+  ChevronDown, ChevronUp, User, Download, Timer, BarChart2,
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import Avatar from '../ui/Avatar';
@@ -9,18 +12,84 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout }          from '../../features/auth/authSlice';
 import { toggleSidebar }   from '../../features/ui/uiSlice';
 
-const NAV = [
-  { to: '/dashboard',   icon: LayoutDashboard, label: 'Dashboard'  },
-  { to: '/boards',      icon: Layers,           label: 'Boards'     },
-  { to: '/board/board-1', icon: Trello,           label: 'Kanban'     },
-  { to: '/team',        icon: Users,            label: 'Team'       },
-  { to: '/settings',    icon: Settings,         label: 'Settings'   },
+interface NavItem {
+  to:    string;
+  icon:  React.ElementType;
+  label: string;
+}
+
+const MAIN_NAV: NavItem[] = [
+  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { to: '/boards',    icon: Trello,          label: 'Boards'    },
+  { to: '/team',      icon: Users,           label: 'Team'      },
 ];
 
+const PRODUCTIVITY_NAV: NavItem[] = [
+  { to: '/timeline',     icon: Clock,         label: 'Timeline'       },
+  { to: '/calendar',     icon: Calendar,      label: 'Calendar'       },
+  { to: '/smart-work',   icon: Zap,           label: 'Smart Work'     },
+  { to: '/habits',       icon: Target,        label: 'Habit Tracker'  },
+  { to: '/pomodoro',     icon: Timer,         label: 'Pomodoro'       },
+  { to: '/productivity', icon: BarChart2,     label: 'Productivity'   },
+];
+
+const NOTES_NAV: NavItem[] = [
+  { to: '/sticky-notes', icon: StickyNote,    label: 'Sticky Notes' },
+  { to: '/notebook',     icon: BookOpen,      label: 'Notebook'     },
+];
+
+const ACCOUNT_NAV: NavItem[] = [
+  { to: '/contacts', icon: MessageSquare, label: 'Contacts'   },
+  { to: '/export',   icon: Download,      label: 'Export Data'},
+  { to: '/account',  icon: User,          label: 'Account'    },
+  { to: '/settings', icon: Settings,      label: 'Settings'   },
+];
+
+function NavSection({
+  label, items, sidebarOpen, defaultOpen = true,
+}: { label: string; items: NavItem[]; sidebarOpen: boolean; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <div className="mb-1">
+      {sidebarOpen && (
+        <button
+          onClick={() => setOpen(o => !o)}
+          className="w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider hover:text-slate-500 dark:hover:text-slate-400 transition-colors"
+        >
+          {label}
+          {open ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
+        </button>
+      )}
+      {(open || !sidebarOpen) && (
+        <div className="space-y-0.5">
+          {items.map(({ to, icon: Icon, label: itemLabel }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) =>
+                cn(
+                  'sidebar-link dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-brand-400',
+                  sidebarOpen ? '' : 'justify-center px-0',
+                  isActive && 'active dark:!bg-brand-900/40 dark:!text-brand-400',
+                )
+              }
+              title={!sidebarOpen ? itemLabel : undefined}
+            >
+              <Icon size={16} className="flex-shrink-0" />
+              {sidebarOpen && <span className="text-sm">{itemLabel}</span>}
+            </NavLink>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Sidebar() {
-  const dispatch   = useAppDispatch();
-  const navigate   = useNavigate();
-  const { user }   = useAppSelector(s => s.auth);
+  const dispatch        = useAppDispatch();
+  const navigate        = useNavigate();
+  const { user }        = useAppSelector(s => s.auth);
   const { sidebarOpen } = useAppSelector(s => s.ui);
 
   const handleLogout = () => {
@@ -64,11 +133,13 @@ export default function Sidebar() {
       {/* New Task Button */}
       <div className="px-3 py-3 border-b border-slate-100 dark:border-slate-700">
         <button
+          onClick={() => navigate('/boards')}
           className={cn(
             'w-full flex items-center gap-2 bg-brand-600 text-white text-sm font-medium',
             'rounded-lg transition-colors hover:bg-brand-700',
             sidebarOpen ? 'px-3 py-2 justify-start' : 'p-2 justify-center',
           )}
+          title="Go to Boards to add a task"
         >
           <Plus size={16} />
           {sidebarOpen && 'New Task'}
@@ -76,24 +147,12 @@ export default function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-0.5">
-        {NAV.map(({ to, icon: Icon, label }) => (
-          <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) =>
-              cn(
-                'sidebar-link dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-brand-400',
-                sidebarOpen ? '' : 'justify-center px-0',
-                isActive && 'active dark:!bg-brand-900/40 dark:!text-brand-400',
-              )
-            }
-            title={!sidebarOpen ? label : undefined}
-          >
-            <Icon size={18} className="flex-shrink-0" />
-            {sidebarOpen && label}
-          </NavLink>
-        ))}
+      <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-2">
+        {/* Main nav (no label when collapsed) */}
+        <NavSection label="Main"         items={MAIN_NAV}         sidebarOpen={sidebarOpen} defaultOpen />
+        <NavSection label="Productivity" items={PRODUCTIVITY_NAV} sidebarOpen={sidebarOpen} defaultOpen />
+        <NavSection label="Notes"        items={NOTES_NAV}        sidebarOpen={sidebarOpen} defaultOpen />
+        <NavSection label="Account"      items={ACCOUNT_NAV}      sidebarOpen={sidebarOpen} defaultOpen />
       </nav>
 
       {/* User profile */}

@@ -7,11 +7,22 @@ import { useAppSelector } from '../../app/hooks';
 import { cn } from '../../utils/cn';
 
 const PAGE_TITLES: Record<string, string> = {
-  '/dashboard': 'Dashboard',
-  '/boards':    'My Boards',
-  '/board':     'Kanban Board',
-  '/team':      'Team',
-  '/settings':  'Settings',
+  '/dashboard':    'Dashboard',
+  '/boards':       'My Boards',
+  '/board':        'Kanban Board',
+  '/team':         'Team',
+  '/settings':     'Settings',
+  '/account':      'Account Info',
+  '/timeline':     'Timeline',
+  '/calendar':     'Task Calendar',
+  '/sticky-notes': 'Sticky Notes',
+  '/notebook':     'Notebook',
+  '/habits':       'Habit Tracker',
+  '/smart-work':   'Smart Work',
+  '/contacts':     'Contact Submissions',
+  '/export':       'Export Data',
+  '/pomodoro':     'Pomodoro Focus',
+  '/productivity': 'Productivity Score',
 };
 
 export default function AppLayout() {
@@ -20,7 +31,18 @@ export default function AppLayout() {
 
   // Sync Redux theme → <html class="dark">
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
+    const applyDark = (dark: boolean) =>
+      document.documentElement.classList.toggle('dark', dark);
+
+    if (theme === 'system') {
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+      applyDark(mq.matches);
+      const handler = (e: MediaQueryListEvent) => applyDark(e.matches);
+      mq.addEventListener('change', handler);
+      return () => mq.removeEventListener('change', handler);
+    } else {
+      applyDark(theme === 'dark');
+    }
   }, [theme]);
 
   const title = Object.entries(PAGE_TITLES).find(([path]) =>
@@ -46,6 +68,7 @@ export default function AppLayout() {
       <Toaster
         position="top-right"
         toastOptions={{
+          duration:  5000,
           className: 'text-sm',
           style: { borderRadius: '10px', background: '#1e293b', color: '#f1f5f9' },
         }}

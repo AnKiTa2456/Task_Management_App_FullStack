@@ -20,7 +20,7 @@ const REFRESH_COOKIE = 'refresh_token';
 const cookieOptions = (isProd: boolean) => ({
   httpOnly: true,
   secure:   isProd,
-  sameSite: 'lax'  as const,
+  sameSite: (isProd ? 'none' : 'lax') as 'none' | 'lax',
   path:     '/api/v1/auth',
   maxAge:   7 * 24 * 60 * 60 * 1000,
 });

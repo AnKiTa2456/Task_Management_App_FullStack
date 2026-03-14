@@ -78,10 +78,10 @@ export default function TaskCard({ task }: TaskCardProps) {
       {/* Footer */}
       <div className="flex items-center justify-between mt-2">
         <div className="flex items-center gap-2 text-slate-400 dark:text-slate-500">
-          {task.comments.length > 0 && (
+          {(task.comments?.length ?? 0) > 0 && (
             <span className="flex items-center gap-0.5 text-xs">
               <MessageSquare size={12} />
-              {task.comments.length}
+              {task.comments?.length}
             </span>
           )}
           {task.dueDate && (

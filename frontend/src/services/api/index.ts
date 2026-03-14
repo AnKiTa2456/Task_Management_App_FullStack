@@ -10,3 +10,4 @@ export { tasksApi }    from './tasks.api';
 export { commentsApi } from './comments.api';
 export { activityApi } from './activity.api';
 export { teamsApi }    from './teams.api';
+export { usersApi }    from './users.api';

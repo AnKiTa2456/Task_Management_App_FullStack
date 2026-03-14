@@ -38,6 +38,7 @@ export interface User {
   email:     string;
   name:      string;
   avatarUrl?: string;
+  bio?:       string;
   createdAt: string;
 }
 
@@ -87,7 +88,7 @@ export interface Task {
   assignee?:    User;
   creator:      User;
   columnId:     string;
-  comments:     Comment[];
+  comments?:    Comment[];
   createdAt:    string;
   updatedAt:    string;
 }

@@ -15,6 +15,17 @@ function processQueue(error: unknown, token: string | null) {
   failedQueue = [];
 }
 
+/** Call this on logout so the next login request is never stuck in the queue. */
+export function resetInterceptorState() {
+  processQueue(new Error('Logged out'), null);
+  isRefreshing = false;
+}
+
+function forceLogout() {
+  store.dispatch(logout());
+  window.location.href = '/login';
+}
+
 export const apiClient = axios.create({
   baseURL:         import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api/v1',
   timeout:         15_000,
@@ -32,7 +43,12 @@ apiClient.interceptors.response.use(
   response => response,
   async (error: AxiosError) => {
     const original = error.config as RetryConfig | undefined;
+
     if (!original || error.response?.status !== 401 || original._retry) {
+      // Retry-after-refresh also got 401 → session fully invalid, kick to login
+      if (original?._retry && error.response?.status === 401) {
+        forceLogout();
+      }
       return Promise.reject(error);
     }
 
@@ -60,8 +76,7 @@ apiClient.interceptors.response.use(
       return apiClient(original);
     } catch (refreshError) {
       processQueue(refreshError, null);
-      store.dispatch(logout());
-      window.location.href = '/login';
+      forceLogout();
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;

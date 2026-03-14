@@ -25,7 +25,19 @@ export class BoardsService {
       },
       include: {
         owner:   { select: { id: true, name: true, avatarUrl: true } },
-        _count:  { select: { columns: true } },
+        columns: {
+          orderBy: { position: 'asc' },
+          include: {
+            tasks: {
+              orderBy: { position: 'asc' },
+              include: {
+                assignee: { select: { id: true, name: true, avatarUrl: true } },
+                labels:   { select: { id: true, name: true, color: true } },
+                _count:   { select: { comments: true } },
+              },
+            },
+          },
+        },
       },
       orderBy: { updatedAt: 'desc' },
     });

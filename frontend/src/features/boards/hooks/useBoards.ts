@@ -193,6 +193,12 @@ export function useBoard(boardId: string) {
     queryKey: QUERY_KEYS.board(boardId),
     queryFn:  MOCK_AUTH ? () => mockGetBoard(boardId) : () => boardsApi.getOne(boardId),
     enabled:  !!boardId,
+    retry: (failureCount, error: unknown) => {
+      // Don't retry on 404 — board doesn't exist, redirect immediately
+      const status = (error as { response?: { status?: number } })?.response?.status;
+      if (status === 404 || status === 403) return false;
+      return failureCount < 2;
+    },
   });
 }
 

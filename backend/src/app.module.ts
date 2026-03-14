@@ -12,6 +12,7 @@ import { TasksModule }          from './modules/tasks/tasks.module';
 import { CommentsModule }       from './modules/comments/comments.module';
 import { ActivityModule }       from './modules/activity/activity.module';
 import { TeamsModule }          from './modules/teams/teams.module';
+import { ContactModule }        from './modules/contact/contact.module';
 import { JwtAuthGuard }         from './common/guards/jwt-auth.guard';
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
@@ -43,6 +44,7 @@ import { LoggingInterceptor }   from './common/interceptors/logging.interceptor'
     CommentsModule,
     ActivityModule,
     TeamsModule,
+    ContactModule,
   ],
   providers: [
     // Apply JWT guard globally — use @Public() to opt-out per route

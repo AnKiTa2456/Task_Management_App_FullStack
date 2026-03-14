@@ -10,9 +10,17 @@ interface AuthState {
 }
 
 const stored = localStorage.getItem('auth');
-const initial: AuthState = stored
-  ? JSON.parse(stored)
-  : { user: null, accessToken: null, isAuthenticated: false, isLoading: false, error: null };
+const parsedAuth: AuthState | null = stored ? JSON.parse(stored) : null;
+
+// Wipe any stale mock-mode session so it never reaches the real backend
+if (parsedAuth?.accessToken?.startsWith('mock-token-')) {
+  localStorage.removeItem('auth');
+}
+
+const initial: AuthState =
+  parsedAuth && !parsedAuth.accessToken?.startsWith('mock-token-')
+    ? parsedAuth
+    : { user: null, accessToken: null, isAuthenticated: false, isLoading: false, error: null };
 
 const authSlice = createSlice({
   name: 'auth',

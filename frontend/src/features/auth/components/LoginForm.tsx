@@ -48,6 +48,10 @@ export function LoginForm() {
         Don't have an account?{' '}
         <Link to="/register" className="font-medium text-brand-600 hover:underline">Create one</Link>
       </p>
+      <p className="mt-3 text-center text-xs text-slate-400">
+        Need help?{' '}
+        <Link to="/contact" className="text-brand-600 hover:underline">Contact us</Link>
+      </p>
     </div>
   );
 }

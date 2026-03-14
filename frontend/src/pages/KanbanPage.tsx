@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import {
   DndContext, DragOverlay, PointerSensor, useSensor, useSensors,
   type DragStartEvent, type DragEndEvent, type DragOverEvent,
@@ -215,11 +215,7 @@ function KanbanView({ boardId }: { boardId: string }) {
   }
 
   if (isError || !board) {
-    return (
-      <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3 border border-red-100">
-        <AlertCircle size={16} /> Board not found or failed to load.
-      </div>
-    );
+    return <Navigate to="/boards" replace />;
   }
 
   const totalTasks = columns.reduce((s, c) => s + c.tasks.length, 0);
@@ -277,7 +273,7 @@ function KanbanView({ boardId }: { boardId: string }) {
         </DragOverlay>
       </DndContext>
 
-      {selectedTask && <TaskDetailPanel />}
+      {selectedTask && <TaskDetailPanel boardId={boardId} />}
 
       {/* Add task modal */}
       <Modal open={!!addTaskColId} onClose={() => setAddTaskColId(null)} title="Add new task">
