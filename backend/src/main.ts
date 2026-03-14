@@ -63,6 +63,12 @@ async function bootstrap() {
     });
   }
 
+  // Health check – used by frontend to wake Render from cold start
+  const httpAdapter = app.getHttpAdapter();
+  httpAdapter.get('/api/v1/health', (_req: unknown, res: { json: (o: object) => void }) =>
+    res.json({ status: 'ok' }),
+  );
+
   await app.listen(port);
   console.log(`\n🚀 Server:  http://localhost:${port}/api/v1`);
   if (isDev) console.log(`📖 Swagger: http://localhost:${port}/api/docs\n`);
