@@ -6,21 +6,6 @@ A production-ready, full-stack productivity application built with **React 19**,
 
 ## Table of Contents
 
-<<<<<<< HEAD
-> Frontend: _Deploy on Vercel_
-> Backend API: _Deploy on AWS EC2_
-> API Docs (Swagger): `http://localhost:3000/api/docs`
-
----
-
-## Screenshots
-
-
-
-| Login | Dashboard | Kanban Board |
-|-------|-----------|--------------|
-| ![Login](https://placehold.co/300x200?text=Login+Page) | ![Dashboard](https://placehold.co/300x200?text=Dashboard) | ![Kanban](https://placehold.co/300x200?text=Kanban+Board) |
-=======
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
@@ -32,7 +17,6 @@ A production-ready, full-stack productivity application built with **React 19**,
 - [Pages & Routes](#pages--routes)
 - [localStorage Keys](#localstorage-keys)
 - [Deployment](#deployment)
->>>>>>> e6f9495 (Added screenshots, new pages, and feature updates)
 
 ---
 
@@ -693,16 +677,12 @@ Log in with **any email + any password** (6+ chars). All localStorage features (
 
 ## Author
 
-<<<<<<< HEAD
-**Ankita** — [@AnKiTa2456](https://github.com/AnKiTa2456)
-=======
 **Ankita Patel**
 
 - GitHub: [@AnKiTa2456](https://github.com/AnKiTa2456)
 - LinkedIn: [Ankita Patel](https://www.linkedin.com/in/ankita-patel-859508220)
 - Email: p.ankita10101@gmail.com
 - Phone: +91 9998889998
->>>>>>> e6f9495 (Added screenshots, new pages, and feature updates)
 
 ---
 
