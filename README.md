@@ -4,6 +4,75 @@ A production-ready, full-stack productivity application built with **React 19**,
 
 ---
 
+## Screenshots
+
+### Register & Login
+| Register | Login |
+|--|--|
+| ![Register](Snaps/page-1.png) | ![Login](Snaps/page-2.png) |
+
+### Dashboard & Notifications
+| Dashboard | Notifications Panel |
+|--|--|
+| ![Dashboard](Snaps/page-3.png) | ![Notifications](Snaps/page-16.png) |
+
+### Boards & Kanban
+| My Boards | Kanban Board |
+|--|--|
+| ![My Boards](Snaps/page-5.png) | ![Kanban Board](Snaps/page-4.png) |
+
+### Team Management
+| Team Page |
+|--|
+| ![Team](Snaps/page-6.1.png) |
+
+### Timeline
+| Timeline — Tasks & Notes |
+|--|
+| ![Timeline](Snaps/page-6.2.png) |
+
+### Task Calendar
+| Calendar |
+|--|
+| ![Calendar](Snaps/page-7.png) |
+
+### Smart Work
+| Smart Work |
+|--|
+| ![Smart Work](Snaps/page-8.png) |
+
+### Habit Tracker
+| Habit Tracker |
+|--|
+| ![Habit Tracker](Snaps/page-10.png) |
+
+### Pomodoro Focus Timer
+| Pomodoro |
+|--|
+| ![Pomodoro](Snaps/page-11.png) |
+
+### Productivity Score
+| Score & Radar Chart | 7-Day Trend & Heatmap |
+|--|--|
+| ![Productivity Score](Snaps/page-12.png) | ![Productivity Trend](Snaps/page-13.png) |
+
+### Sticky Notes
+| Sticky Notes |
+|--|
+| ![Sticky Notes](Snaps/page-14.png) |
+
+### Notebook
+| Notebook |
+|--|
+| ![Notebook](Snaps/page-15.png) |
+
+### Account Info
+| Account Details | Account Activity |
+|--|--|
+| ![Account Info](Snaps/page-17.png) | ![Account Activity](Snaps/page-18.png) |
+
+---
+
 ## Table of Contents
 
 - [Tech Stack](#tech-stack)
