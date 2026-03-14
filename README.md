@@ -410,7 +410,7 @@ See the deployment guide in the project docs for full CI/CD pipeline setup with 
 
 ## Author
 
-**Durgesh** — [@AnKiTa2456](https://github.com/AnKiTa2456)
+**Ankita** — [@AnKiTa2456](https://github.com/AnKiTa2456)
 
 ---
 
