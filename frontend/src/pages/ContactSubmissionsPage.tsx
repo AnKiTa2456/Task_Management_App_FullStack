@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Mail, Phone, User, Clock, MessageSquare, Edit3, Check, Trash2, Search } from 'lucide-react';
+import { Mail, Phone, User, Clock, MessageSquare, Edit3, Check, Trash2, Search, Send, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '../utils/cn';
+import emailjs from '@emailjs/browser';
+import toast from 'react-hot-toast';
+
+const EMAILJS_SERVICE_ID   = 'service_b0w9uyo';
+const EMAILJS_TEMPLATE_ID  = 'template_po870lq';
+const EMAILJS_PUBLIC_KEY   = 'Tu0JTwG4pa-k-dh7y';
 
 interface ContactSubmission {
   id:          string;
@@ -28,6 +34,39 @@ export default function ContactSubmissionsPage() {
   const [editingNote, setEditingNote] = useState(false);
   const [noteText,    setNoteText]    = useState('');
   const [search,      setSearch]      = useState('');
+
+  // Quick contact form state
+  const [formOpen,    setFormOpen]    = useState(false);
+  const [fName,       setFName]       = useState('');
+  const [fEmail,      setFEmail]      = useState('');
+  const [fPhone,      setFPhone]      = useState('');
+  const [fMessage,    setFMessage]    = useState('');
+  const [fLoading,    setFLoading]    = useState(false);
+
+  const handleQuickSubmit = async () => {
+    if (!fName.trim() || !fEmail.trim() || !fPhone.trim() || !fMessage.trim()) {
+      toast.error('Please fill all fields.'); return;
+    }
+    setFLoading(true);
+    const submission: ContactSubmission = {
+      id: crypto.randomUUID(), name: fName.trim(), email: fEmail.trim(),
+      phone: fPhone.trim(), message: fMessage.trim(), notes: '',
+      submittedAt: new Date().toISOString(),
+    };
+    setSubmissions(prev => [submission, ...prev]);
+
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        name: fName.trim(), email: fEmail.trim(), phone: fPhone.trim(),
+        message: fMessage.trim(),
+        time: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+      }, EMAILJS_PUBLIC_KEY);
+      toast.success('Message sent successfully!');
+    } catch { toast.success('Saved locally!'); }
+
+    setFName(''); setFEmail(''); setFPhone(''); setFMessage('');
+    setFormOpen(false); setFLoading(false);
+  };
 
   useEffect(() => { save(submissions); }, [submissions]);
 
@@ -207,6 +246,64 @@ export default function ContactSubmissionsPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Quick Contact Form */}
+      <div className="mt-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+        <button
+          onClick={() => setFormOpen(p => !p)}
+          className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Send size={16} className="text-brand-600 dark:text-brand-400" />
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">Send a New Contact Message</span>
+          </div>
+          {formOpen ? <ChevronUp size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
+        </button>
+
+        {formOpen && (
+          <div className="px-5 pb-5 border-t border-slate-100 dark:border-slate-700">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+              {/* Name */}
+              <div>
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1 block">Full Name *</label>
+                <div className="relative">
+                  <User size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input type="text" placeholder="Your name" value={fName} onChange={e => setFName(e.target.value)}
+                    className="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 dark:border-slate-600 rounded-xl bg-transparent text-slate-700 dark:text-slate-200 outline-none focus:border-brand-400 placeholder-slate-300 dark:placeholder-slate-600" />
+                </div>
+              </div>
+              {/* Email */}
+              <div>
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1 block">Email *</label>
+                <div className="relative">
+                  <Mail size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input type="email" placeholder="you@example.com" value={fEmail} onChange={e => setFEmail(e.target.value)}
+                    className="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 dark:border-slate-600 rounded-xl bg-transparent text-slate-700 dark:text-slate-200 outline-none focus:border-brand-400 placeholder-slate-300 dark:placeholder-slate-600" />
+                </div>
+              </div>
+              {/* Phone */}
+              <div>
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1 block">Phone *</label>
+                <div className="relative">
+                  <Phone size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input type="tel" placeholder="+91 98765 43210" value={fPhone} onChange={e => setFPhone(e.target.value)}
+                    className="w-full pl-8 pr-3 py-2 text-sm border border-slate-200 dark:border-slate-600 rounded-xl bg-transparent text-slate-700 dark:text-slate-200 outline-none focus:border-brand-400 placeholder-slate-300 dark:placeholder-slate-600" />
+                </div>
+              </div>
+              {/* Message */}
+              <div>
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1 block">Message *</label>
+                <textarea placeholder="Your message..." value={fMessage} onChange={e => setFMessage(e.target.value)} rows={1}
+                  className="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-600 rounded-xl bg-transparent text-slate-700 dark:text-slate-200 outline-none focus:border-brand-400 resize-none placeholder-slate-300 dark:placeholder-slate-600" />
+              </div>
+            </div>
+            <button onClick={handleQuickSubmit} disabled={fLoading}
+              className="mt-3 flex items-center gap-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-colors">
+              <Send size={14} /> {fLoading ? 'Sending...' : 'Send Message'}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

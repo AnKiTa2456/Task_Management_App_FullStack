@@ -227,16 +227,19 @@ export default function ContactPage() {
               <Shield size={20} className="text-brand-600 dark:text-brand-400" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Verify Your Email</h2>
-              <p className="text-xs text-slate-400">We'll send a 6-digit OTP to {email}</p>
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Verify Your Phone</h2>
+              <p className="text-xs text-slate-400">OTP will be sent to your email for phone <strong className="text-slate-600 dark:text-slate-300">{phone}</strong></p>
             </div>
           </div>
 
           {!otpSent ? (
             <div className="space-y-4">
-              <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-4">
+              <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-4 space-y-1.5">
                 <p className="text-sm text-slate-600 dark:text-slate-300">
-                  Phone number: <strong className="text-slate-800 dark:text-slate-100">{phone}</strong>
+                  📞 Phone: <strong className="text-slate-800 dark:text-slate-100">{phone}</strong>
+                </p>
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  📧 OTP sent to: <strong className="text-slate-800 dark:text-slate-100">{email}</strong>
                 </p>
               </div>
               <button
