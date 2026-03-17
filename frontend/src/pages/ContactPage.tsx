@@ -6,7 +6,7 @@ import emailjs from '@emailjs/browser';
 
 const EMAILJS_SERVICE_ID    = 'service_b0w9uyo';
 const EMAILJS_TEMPLATE_ID   = 'template_po870lq';  // contact form template
-const EMAILJS_OTP_TEMPLATE  = 'template_po870lq'; // OTP email template
+const EMAILJS_OTP_TEMPLATE  = 'template_pqhjqqi'; // OTP email template
 const EMAILJS_PUBLIC_KEY    = 'Tu0JTwG4pa-k-dh7y';
 
 interface ContactSubmission {
