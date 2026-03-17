@@ -2,6 +2,12 @@ import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Phone, Mail, User, MessageSquare, ArrowLeft, Shield, CheckCircle2, Github } from 'lucide-react';
 import toast from 'react-hot-toast';
+import emailjs from '@emailjs/browser';
+
+const EMAILJS_SERVICE_ID    = 'service_b0w9uyo';
+const EMAILJS_TEMPLATE_ID   = 'template_po870lq';  // contact form template
+const EMAILJS_OTP_TEMPLATE  = 'template_po870lq'; // OTP email template
+const EMAILJS_PUBLIC_KEY    = 'Tu0JTwG4pa-k-dh7y';
 
 interface ContactSubmission {
   id:        string;
@@ -21,9 +27,6 @@ function saveSubmission(sub: ContactSubmission) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
 }
 
-function generateOTP(): string {
-  return String(Math.floor(100000 + Math.random() * 900000));
-}
 
 type Step = 'form' | 'otp' | 'success';
 
@@ -39,19 +42,41 @@ export default function ContactPage() {
   const [loading,  setLoading]  = useState(false);
 
   const otpRef = useRef<string>('');
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const inputRefs = Array.from({ length: 6 }, () => useRef<HTMLInputElement>(null));
   const [digits, setDigits] = useState(Array(6).fill(''));
+  const [visibleOtp, setVisibleOtp] = useState('');
 
-  const handleSendOTP = () => {
-    if (!phone.trim() || phone.replace(/\D/g, '').length < 10) {
+  const handleSendOTP = async () => {
+    const digits = phone.replace(/\D/g, '');
+    if (!phone.trim() || digits.length < 10) {
       toast.error('Please enter a valid 10-digit phone number.');
       return;
     }
-    const code = generateOTP();
+    if (!email.trim() || !email.includes('@')) {
+      toast.error('Please enter your email first — OTP will be sent there.');
+      return;
+    }
+
+    const code = String(Math.floor(100000 + Math.random() * 900000));
     otpRef.current = code;
-    setOtpSent(true);
-    // In production this would call an SMS API. For demo, show in toast.
-    toast.success(`OTP sent! (Demo: ${code})`, { duration: 10000 });
+
+    try {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_OTP_TEMPLATE,
+        { name, otp: code, email },
+        EMAILJS_PUBLIC_KEY,
+      );
+      setVisibleOtp('');
+      setOtpSent(true);
+      toast.success(`OTP sent to ${email}! Check your inbox.`, { duration: 6000 });
+    } catch {
+      // Fallback — show OTP on screen if email fails
+      setVisibleOtp(code);
+      setOtpSent(true);
+      toast.error('Could not send OTP email. Code shown below instead.', { duration: 6000 });
+    }
   };
 
   const handleDigit = (idx: number, val: string) => {
@@ -69,16 +94,42 @@ export default function ContactPage() {
     }
   };
 
-  const handleVerifyOTP = () => {
+  const handleVerifyOTP = async () => {
     const entered = digits.join('');
-    if (entered !== otpRef.current) {
-      setOtpError('Invalid OTP. Please try again.');
-      setDigits(Array(6).fill(''));
-      inputRefs[0].current?.focus();
+    if (entered.length < 6) { setOtpError('Please enter all 6 digits.'); return; }
+
+    // Dev mode — verify locally
+    if (otpRef.current) {
+      if (entered !== otpRef.current) {
+        setOtpError('Invalid OTP. Please try again.');
+        setDigits(Array(6).fill(''));
+        inputRefs[0].current?.focus();
+        return;
+      }
+      setOtpError('');
+      handleSubmit();
       return;
     }
-    setOtpError('');
-    handleSubmit();
+
+    // Production — verify via backend
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api/v1'}/contact/verify-otp`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ phone, otp: entered }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.valid) {
+        setOtpError(data.message || 'Invalid OTP. Please try again.');
+        setDigits(Array(6).fill(''));
+        inputRefs[0].current?.focus();
+        return;
+      }
+      setOtpError('');
+      handleSubmit();
+    } catch {
+      setOtpError('Verification failed. Please try again.');
+    }
   };
 
   const handleSubmit = async () => {
@@ -94,15 +145,26 @@ export default function ContactPage() {
     };
     saveSubmission(submission);
 
-    // Send email notification via backend
+    // Send email via EmailJS
     try {
-      await fetch(`${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000/api/v1'}/contact`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(submission),
-      });
-    } catch {
-      // If backend call fails, still show success (saved locally)
+      const res = await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          name:    name.trim(),
+          email:   email.trim(),
+          phone:   phone.trim(),
+          message: message.trim(),
+          time:    new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+        },
+        EMAILJS_PUBLIC_KEY,
+      );
+      console.log('EmailJS success:', res.status, res.text);
+      toast.success('Email sent successfully!');
+    } catch (err: unknown) {
+      console.error('EmailJS FAILED:', err);
+      const e = err as Record<string, string>;
+      toast.error(`Email failed: ${e?.text || e?.message || 'Unknown error'}`);
     }
 
     setLoading(false);
@@ -165,8 +227,8 @@ export default function ContactPage() {
               <Shield size={20} className="text-brand-600 dark:text-brand-400" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Verify Your Phone</h2>
-              <p className="text-xs text-slate-400">We'll send a 6-digit code to {phone}</p>
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Verify Your Email</h2>
+              <p className="text-xs text-slate-400">We'll send a 6-digit OTP to {email}</p>
             </div>
           </div>
 
@@ -187,8 +249,17 @@ export default function ContactPage() {
           ) : (
             <div className="space-y-5">
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                Enter the 6-digit code sent to your phone.
+                Enter the 6-digit code shown below.
               </p>
+
+              {/* Demo OTP display */}
+              {visibleOtp && (
+                <div className="bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-300 dark:border-amber-700 rounded-xl p-4 text-center">
+                  <p className="text-xs text-amber-600 dark:text-amber-400 font-medium mb-1">Your OTP Code (Demo)</p>
+                  <p className="text-3xl font-bold tracking-[0.3em] text-amber-700 dark:text-amber-300 select-all">{visibleOtp}</p>
+                  <p className="text-xs text-amber-500 dark:text-amber-500 mt-1">Enter this code in the boxes below</p>
+                </div>
+              )}
 
               {/* OTP input boxes */}
               <div className="flex gap-2 justify-center">
@@ -220,7 +291,7 @@ export default function ContactPage() {
               </button>
 
               <button
-                onClick={() => { otpRef.current = generateOTP(); toast.success(`New OTP: ${otpRef.current}`, { duration: 10000 }); setDigits(Array(6).fill('')); setOtpError(''); }}
+                onClick={() => { setOtpSent(false); setDigits(Array(6).fill('')); setOtpError(''); setVisibleOtp(''); otpRef.current = ''; }}
                 className="w-full text-sm text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 transition-colors"
               >
                 Resend OTP
@@ -268,7 +339,9 @@ export default function ContactPage() {
 
             {/* Email */}
             <a
-              href="mailto:p.ankita10101@gmail.com"
+              href="https://mail.google.com/mail/?view=cm&to=p.ankita10101@gmail.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2.5 p-2.5 rounded-xl bg-white dark:bg-slate-700 border border-slate-100 dark:border-slate-600 hover:border-brand-300 dark:hover:border-brand-500 hover:shadow-sm transition-all group"
             >
               <div className="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
@@ -361,7 +434,7 @@ export default function ContactPage() {
                 className="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 dark:border-slate-600 rounded-xl bg-transparent text-slate-700 dark:text-slate-200 outline-none focus:border-brand-400 placeholder-slate-300 dark:placeholder-slate-600"
               />
             </div>
-            <p className="text-xs text-slate-400 mt-1">You'll verify this with a 6-digit OTP in the next step.</p>
+            <p className="text-xs text-slate-400 mt-1">A 6-digit OTP will be sent to your email to verify.</p>
           </div>
 
           {/* Message */}

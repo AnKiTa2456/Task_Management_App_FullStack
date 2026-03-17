@@ -17,4 +17,22 @@ export class ContactController {
     await this.contactService.handleSubmission(dto);
     return { message: 'Contact form submitted successfully' };
   }
+
+  @Public()
+  @Post('send-otp')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Send OTP to phone number via SMS' })
+  async sendOtp(@Body() body: { phone: string }) {
+    const result = await this.contactService.sendOtp(body.phone);
+    return result;
+  }
+
+  @Public()
+  @Post('verify-otp')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Verify OTP entered by user' })
+  async verifyOtp(@Body() body: { phone: string; otp: string }) {
+    const result = await this.contactService.verifyOtp(body.phone, body.otp);
+    return result;
+  }
 }

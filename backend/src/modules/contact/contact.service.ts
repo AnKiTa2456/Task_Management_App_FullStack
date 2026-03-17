@@ -1,10 +1,87 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
+import * as https from 'https';
 import { CreateContactDto } from './dto/create-contact.dto';
+
+// In-memory OTP store: phone → { otp, expiresAt }
+const otpStore = new Map<string, { otp: string; expiresAt: number }>();
 
 @Injectable()
 export class ContactService {
   private readonly logger = new Logger(ContactService.name);
+
+  // ── OTP Methods ────────────────────────────────────────────────────────────
+
+  async sendOtp(phone: string): Promise<{ message: string }> {
+    const digits = phone.replace(/\D/g, '');
+    if (digits.length < 10) throw new BadRequestException('Invalid phone number');
+
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    otpStore.set(digits, { otp, expiresAt: Date.now() + 5 * 60 * 1000 }); // 5 min expiry
+
+    const apiKey = process.env.FAST2SMS_API_KEY;
+    if (!apiKey) {
+      this.logger.warn('FAST2SMS_API_KEY not set — OTP generated but not sent via SMS');
+      // In dev mode return OTP in response for testing
+      return { message: `DEV_OTP:${otp}` };
+    }
+
+    await this.sendSms(digits.slice(-10), otp, apiKey);
+    this.logger.log(`OTP sent to ${digits.slice(-10)}`);
+    return { message: 'OTP sent successfully' };
+  }
+
+  async verifyOtp(phone: string, otp: string): Promise<{ valid: boolean }> {
+    const digits = phone.replace(/\D/g, '');
+    const record = otpStore.get(digits);
+
+    if (!record) throw new BadRequestException('OTP not found. Please request a new one.');
+    if (Date.now() > record.expiresAt) {
+      otpStore.delete(digits);
+      throw new BadRequestException('OTP expired. Please request a new one.');
+    }
+    if (record.otp !== otp.trim()) throw new BadRequestException('Invalid OTP.');
+
+    otpStore.delete(digits); // one-time use
+    return { valid: true };
+  }
+
+  private sendSms(phone: string, otp: string, apiKey: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const params = new URLSearchParams({
+        authorization:    apiKey,
+        route:            'q',        // Quick Transactional — no website verification needed
+        message:          `Your TaskFlow OTP is ${otp}. Valid for 5 minutes. Do not share with anyone.`,
+        flash:            '0',
+        numbers:          phone,
+      });
+
+      const options = {
+        hostname: 'www.fast2sms.com',
+        path:     `/dev/bulkV2?${params.toString()}`,
+        method:   'GET',
+        headers:  { 'cache-control': 'no-cache' },
+      };
+
+      const req = https.request(options, res => {
+        let body = '';
+        res.on('data', chunk => (body += chunk));
+        res.on('end', () => {
+          try {
+            const json = JSON.parse(body);
+            if (json.return === true) resolve();
+            else reject(new Error(json.message || 'SMS send failed'));
+          } catch {
+            reject(new Error('Invalid response from Fast2SMS'));
+          }
+        });
+      });
+      req.on('error', reject);
+      req.end();
+    });
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
 
   async handleSubmission(dto: CreateContactDto): Promise<void> {
     this.logger.log(`New contact submission from ${dto.email}`);
