@@ -1,5 +1,8 @@
 # TaskFlow — SaaS-Level Full-Stack Productivity System
 
+[![GitHub](https://img.shields.io/badge/GitHub-AnKiTa2456-181717?style=flat&logo=github)](https://github.com/AnKiTa2456)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Ankita%20Patel-0A66C2?style=flat&logo=linkedin)](https://www.linkedin.com/in/ankita-patel-859508220)
+
 A production-ready, full-stack productivity application built with **React 19**, **NestJS 10**, and **PostgreSQL 16**. Goes far beyond a Kanban board — includes Habit Tracker, Pomodoro Focus Timer, GitHub-style Activity Heatmap, Productivity Score, Notebook, Sticky Notes, Smart Work, Task Calendar, Timeline with Notes, Global Search, In-App Notifications, Data Export (PDF/CSV/JSON), Contact System, and Dark Mode.
 
 ---
