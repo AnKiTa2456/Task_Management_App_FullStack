@@ -22,9 +22,24 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // ── CORS ──────────────────────────────────────────────────────────────────
+  const rawOrigins = config.get<string>('frontendUrl') ?? '';
+  const allowedOrigins = new Set([
+    ...rawOrigins.split(',').map((s) => s.trim()).filter(Boolean),
+    'http://localhost:5173',
+    'http://localhost:5174',
+  ]);
+
   app.enableCors({
-    origin:      config.get<string>('frontendUrl') ?? 'http://localhost:5173',
-    credentials: true,   // allows cookies to be sent cross-origin
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, Postman)
+      if (!origin) return callback(null, true);
+      // Allow exact matches and any *.vercel.app preview deployment
+      if (allowedOrigins.has(origin) || origin.endsWith('.vercel.app')) {
+        return callback(null, true);
+      }
+      callback(new Error(`CORS: origin ${origin} not allowed`));
+    },
+    credentials: true,
     methods:     ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   });
 
