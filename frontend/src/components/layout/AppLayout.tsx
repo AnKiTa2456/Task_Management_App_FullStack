@@ -66,11 +66,11 @@ export default function AppLayout() {
   )?.[1];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-200 overflow-x-hidden">
-      {/* Mobile backdrop */}
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-200 overflow-x-hidden w-full">
+      {/* Backdrop — closes sidebar on outside tap (all screen sizes) */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-20 bg-black/40 md:hidden"
+          className="fixed inset-0 z-20 bg-black/40"
           onClick={() => dispatch(setSidebarOpen(false))}
         />
       )}
@@ -93,7 +93,7 @@ export default function AppLayout() {
           // Desktop: offset by sidebar width via CSS variable
           sidebarOpen
             ? 'ml-0 md:ml-[var(--sidebar-open)]'
-            : 'ml-0 md:ml-[var(--sidebar-closed)]',
+            : 'ml-0',
         )}
       >
         {/*

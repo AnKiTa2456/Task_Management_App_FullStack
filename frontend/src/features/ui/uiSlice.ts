@@ -12,7 +12,7 @@ interface UIState {
 const savedTheme = (localStorage.getItem('theme') as ThemeMode) ?? 'system';
 
 const initialState: UIState = {
-  sidebarOpen: true,
+  sidebarOpen: false,
   activeModal: null,
   theme:       savedTheme,
 };

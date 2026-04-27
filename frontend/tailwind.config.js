@@ -53,13 +53,12 @@ export default {
         'fluid-5': 'clamp(1.25rem, 2.5vw, 1.75rem)',
         'fluid-6': 'clamp(1.25rem, 3vw,   2rem)',
         'fluid-8': 'clamp(1.5rem,  4vw,   2.5rem)',
-        // Sidebar dimensions as spacing tokens so ml/w utilities can use them
-        'sidebar-open':   'var(--sidebar-open)',
-        'sidebar-closed': 'var(--sidebar-closed)',
+        // Sidebar open width as spacing token
+        'sidebar-open': 'var(--sidebar-open)',
       },
       maxWidth: {
         'fluid':    '90vw',
-        'fluid-lg': 'min(90vw, 72rem)',
+        'fluid-lg': 'min(90vw, 72rem)', 
         'fluid-xl': 'min(92vw, 80rem)',
       },
       boxShadow: {
@@ -67,18 +66,18 @@ export default {
         'card-hover':'0 4px 12px 0 rgb(0 0 0 / 0.12)',
       },
       animation: {
-        'slide-in': 'slideIn 0.25s ease-out',
-        'fade-in':  'fadeIn 0.15s ease-out',
+        'slide-in':   'slideIn   0.25s ease-out both',
+        'fade-in':    'fadeIn    0.18s ease-out both',
+        'dropdown':   'dropdown  0.2s  cubic-bezier(0.16,1,0.3,1) both',
+        'spin-once':  'spinOnce  0.35s ease-out both',
+        'pulse-once': 'pulseOnce 0.4s  ease-out both',
       },
       keyframes: {
-        slideIn: {
-          '0%':   { transform: 'translateX(100%)', opacity: '0' },
-          '100%': { transform: 'translateX(0)',    opacity: '1' },
-        },
-        fadeIn: {
-          '0%':   { opacity: '0', transform: 'translateY(4px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
-        },
+        slideIn:   { '0%': { transform: 'translateX(100%)', opacity: '0' }, '100%': { transform: 'translateX(0)', opacity: '1' } },
+        fadeIn:    { '0%': { opacity: '0', transform: 'translateY(4px)' },  '100%': { opacity: '1', transform: 'translateY(0)' } },
+        dropdown:  { '0%': { opacity: '0', transform: 'translateY(-8px) scale(0.97)' }, '100%': { opacity: '1', transform: 'translateY(0) scale(1)' } },
+        spinOnce:  { '0%': { transform: 'rotate(-30deg)' }, '100%': { transform: 'rotate(0deg)' } },
+        pulseOnce: { '0%': { transform: 'scale(1)' }, '50%': { transform: 'scale(1.3)' }, '100%': { transform: 'scale(1)' } },
       },
     },
   },

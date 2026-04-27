@@ -110,7 +110,7 @@ export default function Sidebar() {
         'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700',
         'transition-all duration-300 shadow-sm',
         // Mobile: slide off-screen when closed; Desktop: stay in flow (narrow)
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full',
       )}
       style={{
         // Width driven by CSS variable — update :root vars to resize everything at once

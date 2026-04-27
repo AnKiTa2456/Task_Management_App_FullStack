@@ -245,7 +245,7 @@ export default function PomodoroPage() {
       {showConfig && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowConfig(false)} />
-          <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 p-5 w-[calc(100vw-2rem)] max-w-sm sm:w-80 animate-fade-in">
+          <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 p-5 w-full max-w-sm animate-fade-in">
             <div className="flex items-center justify-between mb-5">
               <h3 className="font-semibold text-slate-800 dark:text-slate-100">Timer Settings</h3>
               <button onClick={() => setShowConfig(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"><X size={18} /></button>
