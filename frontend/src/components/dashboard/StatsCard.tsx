@@ -20,10 +20,10 @@ export default function StatsCard({
         <Icon size={22} className={iconColor} />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-slate-500 font-medium truncate">{title}</p>
-        <p className="text-2xl font-bold text-slate-800 leading-tight">{value}</p>
+        <p className="text-fluid-xs text-slate-500 dark:text-slate-400 font-medium truncate">{title}</p>
+        <p className="text-fluid-2xl font-bold text-slate-800 dark:text-slate-100 leading-tight">{value}</p>
         {change && (
-          <p className={cn('text-xs mt-0.5', positive ? 'text-emerald-600' : 'text-red-500')}>
+          <p className={cn('text-fluid-xs mt-0.5 truncate', positive ? 'text-emerald-600' : 'text-red-500')}>
             {positive ? '↑' : '↓'} {change}
           </p>
         )}

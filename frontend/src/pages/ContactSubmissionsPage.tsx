@@ -105,14 +105,14 @@ export default function ContactSubmissionsPage() {
             placeholder="Search..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="pl-8 pr-4 py-2 text-sm border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 outline-none focus:border-brand-400 w-52"
+            className="pl-8 pr-4 py-2 text-sm border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 outline-none focus:border-brand-400 w-full sm:w-52"
           />
         </div>
       </div>
 
-      <div className="flex gap-4 h-[calc(100vh-10rem)]">
+      <div className="flex flex-col sm:flex-row gap-4 sm:h-[calc(100vh-10rem)]">
         {/* List panel */}
-        <div className="w-80 flex-shrink-0 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col">
+        <div className="w-full sm:w-72 lg:w-80 sm:flex-shrink-0 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col max-h-64 sm:max-h-none">
           <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700 text-xs text-slate-400 font-medium">
             {filtered.length} submission{filtered.length !== 1 ? 's' : ''}
           </div>
@@ -170,7 +170,7 @@ export default function ContactSubmissionsPage() {
 
               <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
                 {/* Contact details */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {[
                     { icon: User,  label: 'Name',  value: selected.name  },
                     { icon: Mail,  label: 'Email', value: selected.email },

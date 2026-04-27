@@ -94,10 +94,10 @@ export default function SmartWorkPage() {
     <div className="max-w-3xl mx-auto animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+          <h1 className="text-fluid-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
             <Zap size={20} className="text-amber-500" /> Smart Work
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-fluid-sm text-slate-500 dark:text-slate-400 mt-1">
             Plan and track focused work sessions.
           </p>
         </div>
@@ -123,22 +123,22 @@ export default function SmartWorkPage() {
             <div className="h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden mb-3">
               <div className={cn('h-full rounded-full transition-all duration-700', barColor)} style={{ width: `${pct}%` }} />
             </div>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <div className="text-center p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                <p className="text-lg font-bold text-slate-700 dark:text-slate-200">{items.length}</p>
-                <p className="text-[10px] text-slate-400">Total</p>
+                <p className="text-fluid-xl font-bold text-slate-700 dark:text-slate-200">{items.length}</p>
+                <p className="text-xs text-slate-400">Total</p>
               </div>
               <div className="text-center p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                <p className="text-lg font-bold text-slate-500">{items.filter(i => i.status === 'TODO').length}</p>
-                <p className="text-[10px] text-slate-400">To Do</p>
+                <p className="text-fluid-xl font-bold text-slate-500">{items.filter(i => i.status === 'TODO').length}</p>
+                <p className="text-xs text-slate-400">To Do</p>
               </div>
               <div className="text-center p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <p className="text-lg font-bold text-blue-600">{inProgressCount}</p>
-                <p className="text-[10px] text-slate-400">In Progress</p>
+                <p className="text-fluid-xl font-bold text-blue-600">{inProgressCount}</p>
+                <p className="text-xs text-slate-400">In Progress</p>
               </div>
               <div className="text-center p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
-                <p className="text-lg font-bold text-emerald-600">{doneCount}</p>
-                <p className="text-[10px] text-slate-400">Done</p>
+                <p className="text-fluid-xl font-bold text-emerald-600">{doneCount}</p>
+                <p className="text-xs text-slate-400">Done</p>
               </div>
             </div>
           </div>

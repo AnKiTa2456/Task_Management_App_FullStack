@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import {
   Bell, Search, Sun, Moon, X, CheckCheck, Trash2,
   CheckCircle2, MessageSquare, Target, AlertTriangle, Info,
+  User, Settings, LogOut, Menu,
 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { toggleTheme } from '../../features/ui/uiSlice';
+import { toggleTheme, toggleSidebar } from '../../features/ui/uiSlice';
+import { logout } from '../../features/auth/authSlice';
 import { markRead, markAllRead, deleteNotification, clearAll } from '../../features/notifications/notificationsSlice';
 import type { NotifCategory } from '../../features/notifications/notificationsSlice';
 import Avatar from '../ui/Avatar';
@@ -33,9 +35,11 @@ export default function Navbar({ title }: NavbarProps) {
   const { theme, sidebarOpen } = useAppSelector(s => s.ui);
   const notifications = useAppSelector(s => s.notifications.items);
 
-  const [showNotif,  setShowNotif]  = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
-  const notifRef = useRef<HTMLDivElement>(null);
+  const [showNotif,    setShowNotif]    = useState(false);
+  const [showSearch,   setShowSearch]   = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const notifRef   = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -48,6 +52,16 @@ export default function Navbar({ title }: NavbarProps) {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [showNotif]);
+
+  // Close user menu on outside click
+  useEffect(() => {
+    if (!showUserMenu) return;
+    const handler = (e: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) setShowUserMenu(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showUserMenu]);
 
   // Global Cmd+K / Ctrl+K shortcut
   useEffect(() => {
@@ -65,11 +79,20 @@ export default function Navbar({ title }: NavbarProps) {
           'fixed top-0 right-0 z-20 h-16 border-b transition-all duration-300',
           'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700',
           'flex items-center justify-between px-4 gap-4',
-          sidebarOpen ? 'left-60' : 'left-16',
+          // Mobile: full-width (sidebar is overlay, not in flow)
+          // Desktop: starts after sidebar using the same CSS variable the sidebar uses
+          sidebarOpen ? 'left-0 md:left-[var(--sidebar-open)]' : 'left-0 md:left-[var(--sidebar-closed)]',
         )}
       >
-        {/* Left: page title */}
-        <div className="flex items-center gap-3 min-w-0">
+        {/* Left: menu toggle + page title */}
+        <div className="flex items-center gap-2 min-w-0">
+          <button
+            onClick={() => dispatch(toggleSidebar())}
+            className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex-shrink-0"
+            title="Toggle sidebar"
+          >
+            <Menu size={18} />
+          </button>
           <h1 className="text-base font-semibold text-slate-800 dark:text-slate-100 truncate">{title ?? 'Dashboard'}</h1>
         </div>
 
@@ -200,15 +223,50 @@ export default function Navbar({ title }: NavbarProps) {
             )}
           </div>
 
-          {/* User avatar → account */}
+          {/* User avatar → dropdown */}
           {user && (
-            <button
-              onClick={() => navigate('/account')}
-              className="ml-1 flex items-center gap-2 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-              title="Account"
-            >
-              <Avatar name={user.name} src={user.avatarUrl} size="sm" />
-            </button>
+            <div className="relative ml-1" ref={userMenuRef}>
+              <button
+                onClick={() => setShowUserMenu(v => !v)}
+                className="flex items-center gap-2 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                title="Account"
+              >
+                <Avatar name={user.name} src={user.avatarUrl} size="sm" />
+              </button>
+
+              {showUserMenu && (
+                <div className="absolute right-0 top-11 w-56 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 z-50 animate-fade-in overflow-hidden">
+                  {/* User info */}
+                  <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">{user.name}</p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 truncate">{user.email}</p>
+                  </div>
+                  {/* Menu items */}
+                  <div className="py-1.5">
+                    <button
+                      onClick={() => { navigate('/account'); setShowUserMenu(false); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <User size={15} className="text-slate-400" /> View Profile
+                    </button>
+                    <button
+                      onClick={() => { navigate('/settings'); setShowUserMenu(false); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <Settings size={15} className="text-slate-400" /> Settings
+                    </button>
+                  </div>
+                  <div className="border-t border-slate-100 dark:border-slate-700 py-1.5">
+                    <button
+                      onClick={() => { dispatch(logout()); navigate('/login'); setShowUserMenu(false); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    >
+                      <LogOut size={15} /> Sign out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </header>

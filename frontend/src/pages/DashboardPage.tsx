@@ -1,25 +1,18 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import {
-  CheckCircle2, Clock, AlertCircle, TrendingUp, Plus,
+  CheckCircle2, Clock, AlertCircle, TrendingUp,
   Target, StickyNote, BookOpen, Zap, ArrowRight,
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, Cell,
   PieChart, Pie, Tooltip, ResponsiveContainer, XAxis, YAxis,
 } from 'recharts';
-import StatsCard        from '../components/dashboard/StatsCard';
-import ActivityHeatmap  from '../components/shared/ActivityHeatmap';
-import RecentActivity from '../components/dashboard/RecentActivity';
-import MyTasks        from '../components/dashboard/MyTasks';
-import Button         from '../components/ui/Button';
-import Modal          from '../components/ui/Modal';
-import { Select }     from '../components/ui/Select';
-import { TaskForm }   from '../features/tasks/components/TaskForm';
-import { useBoards }  from '../features/boards';
-import { useCreateTask } from '../features/tasks/hooks/useTasks';
-import { useAppSelector, useAppDispatch } from '../app/hooks';
-import { addNotification } from '../features/notifications/notificationsSlice';
-import type { CreateTaskDto } from '../services/api/tasks.api';
+import StatsCard       from '../components/dashboard/StatsCard';
+import ActivityHeatmap from '../components/shared/ActivityHeatmap';
+import RecentActivity  from '../components/dashboard/RecentActivity';
+import MyTasks         from '../components/dashboard/MyTasks';
+import { useBoards }   from '../features/boards';
+import { useAppSelector } from '../app/hooks';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '../utils/cn';
 
@@ -100,30 +93,9 @@ function QuickCard({ icon, label, count, link, color }: { icon: React.ReactNode;
 }
 
 export default function DashboardPage() {
-  const dispatch = useAppDispatch();
   const { user } = useAppSelector(s => s.auth);
-  const [taskModalOpen,    setTaskModalOpen]    = useState(false);
-  const [selectedBoardId,  setSelectedBoardId]  = useState('');
-  const [selectedColumnId, setSelectedColumnId] = useState('');
-
   const { data: boards = [] } = useBoards();
-  const { mutate: createTask, isPending } = useCreateTask(selectedBoardId);
   const stats = useDashboardStats();
-
-  const selectedBoard = boards.find(b => b.id === selectedBoardId);
-  const boardOptions  = [{ value: '', label: 'Select a board…' }, ...boards.map(b => ({ value: b.id, label: b.name }))];
-  const columnOptions = [{ value: '', label: 'Select a column…' }, ...(selectedBoard?.columns ?? []).map(c => ({ value: c.id, label: c.name }))];
-
-  const closeModal = () => { setTaskModalOpen(false); setSelectedBoardId(''); setSelectedColumnId(''); };
-
-  const handleCreateTask = (data: CreateTaskDto) => {
-    createTask(data, {
-      onSuccess: (task) => {
-        closeModal();
-        dispatch(addNotification({ title: 'Task created', body: `"${(task as any).title}" was added to your board.`, category: 'task', link: `/board/${selectedBoardId}` }));
-      },
-    });
-  };
 
   const hour     = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
@@ -137,20 +109,17 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">{greeting}, {user?.name?.split(' ')[0]} 👋</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Your productivity overview for today.</p>
-        </div>
-        <Button icon={<Plus size={16} />} size="md" onClick={() => setTaskModalOpen(true)}>New Task</Button>
+      <div>
+        <h1 className="text-fluid-xl font-bold text-slate-800 dark:text-slate-100 text-balance">{greeting}, {user?.name?.split(' ')[0]} 👋</h1>
+        <p className="text-fluid-sm text-slate-500 dark:text-slate-400 mt-0.5">Your productivity overview for today.</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {STATS.map(s => <StatsCard key={s.title} {...s} />)}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
+        <div className="xl:col-span-2 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">Task Completion — Last 7 Days</h3>
@@ -200,7 +169,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5">
           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2">
             <Target size={15} className="text-emerald-500" /> Today's Habits
@@ -232,7 +201,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="lg:col-span-2 grid grid-cols-2 gap-3">
+        <div className="xl:col-span-2 grid grid-cols-2 gap-3">
           <QuickCard icon={<StickyNote size={18} className="text-yellow-600" />} label="Sticky Notes" count={stats.notes}          link="/sticky-notes" color="bg-yellow-50 dark:bg-yellow-900/20" />
           <QuickCard icon={<BookOpen  size={18} className="text-purple-600" />} label="Notebook"     count={stats.nbPages}         link="/notebook"     color="bg-purple-50 dark:bg-purple-900/20" />
           <QuickCard icon={<Zap       size={18} className="text-amber-600"  />} label="Smart Work"   count={0}                     link="/smart-work"   color="bg-amber-50  dark:bg-amber-900/20"  />
@@ -246,20 +215,6 @@ export default function DashboardPage() {
         <MyTasks />
         <RecentActivity />
       </div>
-
-      <Modal open={taskModalOpen} onClose={closeModal} title="Add new task">
-        <div className="space-y-4">
-          {boards.length === 0 ? (
-            <p className="text-sm text-slate-500 text-center py-4">No boards yet. Create a board first from the Boards page.</p>
-          ) : (
-            <>
-              <Select label="Board" options={boardOptions} value={selectedBoardId} onChange={e => { setSelectedBoardId(e.target.value); setSelectedColumnId(''); }} />
-              {selectedBoardId && <Select label="Column" options={columnOptions} value={selectedColumnId} onChange={e => setSelectedColumnId(e.target.value)} />}
-              {selectedColumnId && <TaskForm columnId={selectedColumnId} onSubmit={handleCreateTask} onCancel={closeModal} isLoading={isPending} />}
-            </>
-          )}
-        </div>
-      </Modal>
     </div>
   );
 }

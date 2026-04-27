@@ -107,8 +107,8 @@ export default function HabitTrackerPage() {
     <div className="max-w-3xl mx-auto animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">Habit Tracker</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Build streaks, one day at a time.</p>
+          <h1 className="text-fluid-xl font-bold text-slate-800 dark:text-slate-100">Habit Tracker</h1>
+          <p className="text-fluid-sm text-slate-500 dark:text-slate-400 mt-1">Build streaks, one day at a time.</p>
         </div>
         <button onClick={() => setAdding(true)} className="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
           <Plus size={16} /> Add Habit
@@ -248,7 +248,8 @@ export default function HabitTrackerPage() {
             </div>
           ) : habits.length > 0 && (
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
-              <div className="grid gap-0" style={{ gridTemplateColumns: '1fr repeat(7, 2rem) 3rem 2rem' }}>
+              <div className="overflow-x-auto">
+              <div className="grid gap-0 min-w-[28rem]" style={{ gridTemplateColumns: '1fr repeat(7, 2rem) 3rem 2rem' }}>
                 <div className="px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-700">Habit</div>
                 {days.map(d => (
                   <div key={d} className="py-3 text-center text-xs text-slate-400 border-b border-slate-100 dark:border-slate-700">
@@ -262,7 +263,7 @@ export default function HabitTrackerPage() {
               {habits.map((habit, idx) => {
                 const s = streak(habit.logs);
                 return (
-                  <div key={habit.id} className={cn('grid items-center gap-0', idx !== habits.length - 1 && 'border-b border-slate-50 dark:border-slate-700/50')} style={{ gridTemplateColumns: '1fr repeat(7, 2rem) 3rem 2rem' }}>
+                  <div key={habit.id} className={cn('grid items-center gap-0 min-w-[28rem]', idx !== habits.length - 1 && 'border-b border-slate-50 dark:border-slate-700/50')} style={{ gridTemplateColumns: '1fr repeat(7, 2rem) 3rem 2rem' }}>
                     <div className="px-4 py-3 flex items-center gap-2">
                       <span className="text-lg">{habit.emoji}</span>
                       <p className="text-sm font-medium text-slate-700 dark:text-slate-200 truncate max-w-[140px]">{habit.name}</p>
@@ -284,6 +285,7 @@ export default function HabitTrackerPage() {
                   </div>
                 );
               })}
+              </div>
             </div>
           )}
         </>

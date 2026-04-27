@@ -45,7 +45,7 @@ function BoardsView() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">My Boards</h1>
+          <h1 className="text-fluid-xl font-bold text-slate-800 dark:text-slate-100">My Boards</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
             {boards.length} board{boards.length !== 1 ? 's' : ''}
           </p>
@@ -225,7 +225,7 @@ function KanbanView({ boardId }: { boardId: string }) {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">{board.name}</h1>
+          <h1 className="text-fluid-base font-bold text-slate-800 dark:text-slate-100">{board.name}</h1>
           <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
             {totalTasks} task{totalTasks !== 1 ? 's' : ''} · {columns.length} column{columns.length !== 1 ? 's' : ''}
           </p>
@@ -256,7 +256,7 @@ function KanbanView({ boardId }: { boardId: string }) {
           ))}
           <button
             onClick={() => setAddColOpen(true)}
-            className="flex-shrink-0 w-72 h-12 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl
+            className="flex-shrink-0 w-full sm:w-72 h-12 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl
                        flex items-center justify-center gap-2 text-sm text-slate-400 dark:text-slate-500
                        hover:border-brand-400 hover:text-brand-500 transition-colors self-start"
           >

@@ -53,7 +53,7 @@ export default function TeamPage() {
     return (
       <div className="space-y-6 animate-fade-in">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">Team</h1>
+          <h1 className="text-fluid-xl font-bold text-slate-800 dark:text-slate-100">Team</h1>
           <Button onClick={() => setCreateOpen(true)} className="gap-1.5">
             <Plus size={16} /> Create Team
           </Button>
@@ -90,13 +90,13 @@ export default function TeamPage() {
             <select
               value={selectedIdx}
               onChange={e => setSelectedIdx(Number(e.target.value))}
-              className="text-xl font-bold text-slate-800 dark:text-slate-100 bg-transparent border-none
+              className="text-fluid-xl font-bold text-slate-800 dark:text-slate-100 bg-transparent border-none
                          focus:outline-none cursor-pointer"
             >
               {teams.map((t, i) => <option key={t.id} value={i}>{t.name}</option>)}
             </select>
           ) : (
-            <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">{team?.name}</h1>
+            <h1 className="text-fluid-xl font-bold text-slate-800 dark:text-slate-100">{team?.name}</h1>
           )}
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
             {(members as { id: string }[]).length} member{(members as { id: string }[]).length !== 1 ? 's' : ''}
@@ -122,7 +122,7 @@ export default function TeamPage() {
               <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium mb-2 ${color}`}>
                 {icon} {label}
               </div>
-              <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">{count}</p>
+              <p className="text-fluid-2xl font-bold text-slate-800 dark:text-slate-100">{count}</p>
             </div>
           );
         })}

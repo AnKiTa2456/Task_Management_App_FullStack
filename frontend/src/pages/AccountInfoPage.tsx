@@ -30,7 +30,7 @@ export default function AccountInfoPage() {
         </button>
       </div>
 
-      <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">Account Information</h1>
+      <h1 className="text-fluid-xl font-bold text-slate-800 dark:text-slate-100">Account Information</h1>
 
       {/* Profile card */}
       <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
@@ -42,7 +42,7 @@ export default function AccountInfoPage() {
             </div>
           </div>
           <div className="flex-1">
-            <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">{user.name}</h2>
+            <h2 className="text-fluid-base font-bold text-slate-800 dark:text-slate-100">{user.name}</h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">{user.email}</p>
             <span className="mt-1 inline-flex items-center gap-1 text-xs bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-full font-medium">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -87,15 +87,15 @@ export default function AccountInfoPage() {
         <div className="px-5 py-3.5 border-b border-slate-100 dark:border-slate-700">
           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">Your Activity</h3>
         </div>
-        <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-700">
+        <div className="grid grid-cols-3 divide-x divide-slate-100 dark:divide-slate-700 text-center">
           {[
             { label: 'Boards',     value: boards.length },
             { label: 'Total Tasks', value: totalTasks   },
             { label: 'Completed',  value: doneTasks     },
           ].map(({ label, value }) => (
-            <div key={label} className="px-5 py-5 text-center">
-              <p className="text-2xl font-bold text-slate-800 dark:text-slate-100">{value}</p>
-              <p className="text-xs text-slate-400 mt-1">{label}</p>
+            <div key={label} className="px-2 sm:px-5 py-4 sm:py-5 text-center">
+              <p className="text-fluid-2xl font-bold text-slate-800 dark:text-slate-100">{value}</p>
+              <p className="text-fluid-xs text-slate-400 mt-1 truncate">{label}</p>
             </div>
           ))}
         </div>

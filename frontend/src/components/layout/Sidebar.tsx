@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Trello, Users, Settings,
-  LogOut, ChevronLeft, Plus, Clock, Calendar,
+  LogOut, ChevronLeft, X, Clock, Calendar,
   StickyNote, BookOpen, Zap, Target, MessageSquare,
   ChevronDown, ChevronUp, User, Download, Timer, BarChart2,
 } from 'lucide-react';
@@ -10,7 +10,7 @@ import { cn } from '../../utils/cn';
 import Avatar from '../ui/Avatar';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { logout }          from '../../features/auth/authSlice';
-import { toggleSidebar }   from '../../features/ui/uiSlice';
+import { toggleSidebar, setSidebarOpen } from '../../features/ui/uiSlice';
 
 interface NavItem {
   to:    string;
@@ -34,20 +34,20 @@ const PRODUCTIVITY_NAV: NavItem[] = [
 ];
 
 const NOTES_NAV: NavItem[] = [
-  { to: '/sticky-notes', icon: StickyNote,    label: 'Sticky Notes' },
-  { to: '/notebook',     icon: BookOpen,      label: 'Notebook'     },
+  { to: '/sticky-notes', icon: StickyNote, label: 'Sticky Notes' },
+  { to: '/notebook',     icon: BookOpen,   label: 'Notebook'     },
 ];
 
 const ACCOUNT_NAV: NavItem[] = [
-  { to: '/contacts', icon: MessageSquare, label: 'Contacts'   },
-  { to: '/export',   icon: Download,      label: 'Export Data'},
-  { to: '/account',  icon: User,          label: 'Account'    },
-  { to: '/settings', icon: Settings,      label: 'Settings'   },
+  { to: '/contacts', icon: MessageSquare, label: 'Contacts'    },
+  { to: '/export',   icon: Download,      label: 'Export Data' },
+  { to: '/account',  icon: User,          label: 'Account'     },
+  { to: '/settings', icon: Settings,      label: 'Settings'    },
 ];
 
 function NavSection({
-  label, items, sidebarOpen, defaultOpen = true,
-}: { label: string; items: NavItem[]; sidebarOpen: boolean; defaultOpen?: boolean }) {
+  label, items, sidebarOpen, defaultOpen = true, onNavClick,
+}: { label: string; items: NavItem[]; sidebarOpen: boolean; defaultOpen?: boolean; onNavClick?: () => void }) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
@@ -67,6 +67,7 @@ function NavSection({
             <NavLink
               key={to}
               to={to}
+              onClick={onNavClick}
               className={({ isActive }) =>
                 cn(
                   'sidebar-link dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-brand-400',
@@ -97,16 +98,26 @@ export default function Sidebar() {
     navigate('/login');
   };
 
+  // Close sidebar on mobile after navigation
+  const handleNavClick = () => {
+    if (window.innerWidth < 768) dispatch(setSidebarOpen(false));
+  };
+
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 z-30 h-full border-r',
+        'fixed left-0 top-0 z-30 h-full border-r flex flex-col',
         'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700',
-        'flex flex-col transition-all duration-300 shadow-sm',
-        sidebarOpen ? 'w-60' : 'w-16',
+        'transition-all duration-300 shadow-sm',
+        // Mobile: slide off-screen when closed; Desktop: stay in flow (narrow)
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
       )}
+      style={{
+        // Width driven by CSS variable — update :root vars to resize everything at once
+        width: sidebarOpen ? 'var(--sidebar-open)' : 'var(--sidebar-closed)',
+      }}
     >
-      {/* Logo */}
+      {/* Logo + Toggle */}
       <div className={cn(
         'flex items-center h-16 px-4 border-b border-slate-100 dark:border-slate-700 flex-shrink-0',
         sidebarOpen ? 'justify-between' : 'justify-center',
@@ -119,58 +130,52 @@ export default function Sidebar() {
             <span className="font-bold text-slate-800 dark:text-slate-100 text-sm">TaskFlow</span>
           </div>
         )}
+        {/* Desktop collapse, mobile close */}
         <button
           onClick={() => dispatch(toggleSidebar())}
           className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+          title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
         >
-          <ChevronLeft
-            size={16}
-            className={cn('transition-transform duration-300', !sidebarOpen && 'rotate-180')}
-          />
-        </button>
-      </div>
-
-      {/* New Task Button */}
-      <div className="px-3 py-3 border-b border-slate-100 dark:border-slate-700">
-        <button
-          onClick={() => navigate('/boards')}
-          className={cn(
-            'w-full flex items-center gap-2 bg-brand-600 text-white text-sm font-medium',
-            'rounded-lg transition-colors hover:bg-brand-700',
-            sidebarOpen ? 'px-3 py-2 justify-start' : 'p-2 justify-center',
-          )}
-          title="Go to Boards to add a task"
-        >
-          <Plus size={16} />
-          {sidebarOpen && 'New Task'}
+          {sidebarOpen
+            ? <><ChevronLeft size={16} className="hidden md:block" /><X size={16} className="md:hidden" /></>
+            : <ChevronLeft size={16} className="rotate-180" />
+          }
         </button>
       </div>
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-2">
-        {/* Main nav (no label when collapsed) */}
-        <NavSection label="Main"         items={MAIN_NAV}         sidebarOpen={sidebarOpen} defaultOpen />
-        <NavSection label="Productivity" items={PRODUCTIVITY_NAV} sidebarOpen={sidebarOpen} defaultOpen />
-        <NavSection label="Notes"        items={NOTES_NAV}        sidebarOpen={sidebarOpen} defaultOpen />
-        <NavSection label="Account"      items={ACCOUNT_NAV}      sidebarOpen={sidebarOpen} defaultOpen />
+        <NavSection label="Main"         items={MAIN_NAV}         sidebarOpen={sidebarOpen} defaultOpen onNavClick={handleNavClick} />
+        <NavSection label="Productivity" items={PRODUCTIVITY_NAV} sidebarOpen={sidebarOpen} defaultOpen onNavClick={handleNavClick} />
+        <NavSection label="Notes"        items={NOTES_NAV}        sidebarOpen={sidebarOpen} defaultOpen onNavClick={handleNavClick} />
+        <NavSection label="Account"      items={ACCOUNT_NAV}      sidebarOpen={sidebarOpen} defaultOpen onNavClick={handleNavClick} />
       </nav>
 
       {/* User profile */}
       <div className={cn(
-        'px-3 py-3 border-t border-slate-100 dark:border-slate-700 flex items-center gap-3',
+        'px-3 py-3 border-t border-slate-100 dark:border-slate-700 flex items-center gap-2',
         !sidebarOpen && 'justify-center',
       )}>
-        {user && <Avatar name={user.name} src={user.avatarUrl} size="sm" />}
-        {sidebarOpen && user && (
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">{user.name}</p>
-            <p className="text-xs text-slate-400 dark:text-slate-500 truncate">{user.email}</p>
-          </div>
-        )}
+        <button
+          onClick={() => { navigate('/account'); handleNavClick(); }}
+          title="View Profile"
+          className={cn(
+            'flex items-center gap-2.5 flex-1 min-w-0 rounded-lg p-1 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors',
+            !sidebarOpen && 'justify-center',
+          )}
+        >
+          {user && <Avatar name={user.name} src={user.avatarUrl} size="sm" />}
+          {sidebarOpen && user && (
+            <div className="flex-1 min-w-0 text-left">
+              <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">{user.name}</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 truncate">{user.email}</p>
+            </div>
+          )}
+        </button>
         {sidebarOpen && (
           <button
             onClick={handleLogout}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors flex-shrink-0"
             title="Logout"
           >
             <LogOut size={15} />

@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, Bell, Lock, Palette, LogOut, Sun, Moon, Monitor, Upload, Link2 } from 'lucide-react';
+import { User, Bell, Lock, Palette, LogOut, Sun, Moon, Monitor, Upload, Link2, ChevronLeft } from 'lucide-react';
 import Avatar  from '../components/ui/Avatar';
 import Button  from '../components/ui/Button';
 import Input   from '../components/ui/Input';
@@ -141,29 +141,30 @@ export default function SettingsPage() {
   };
 
   return (
-    /* Clicking the grey page background navigates back */
-    <div
-      className="min-h-[calc(100vh-4rem)] -m-6 p-6 cursor-default"
-      onClick={() => navigate(-1)}
-    >
-    <div
-      className="space-y-6 animate-fade-in max-w-3xl cursor-default"
-      onClick={e => e.stopPropagation()}
-    >
-      <div>
-        <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">Settings</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Manage your account and preferences</p>
+    <div className="space-y-6 animate-fade-in max-w-3xl">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => navigate(-1)}
+          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+          title="Go back"
+        >
+          <ChevronLeft size={18} />
+        </button>
+        <div>
+          <h1 className="text-fluid-xl font-bold text-slate-800 dark:text-slate-100">Settings</h1>
+          <p className="text-fluid-sm text-slate-500 dark:text-slate-400 mt-0.5">Manage your account and preferences</p>
+        </div>
       </div>
 
-      <div className="flex gap-6">
-        {/* Tab sidebar */}
-        <nav className="w-44 flex-shrink-0 space-y-0.5">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+        {/* Tabs — horizontal scroll on mobile, vertical sidebar on sm+ */}
+        <nav className="flex sm:flex-col sm:w-40 sm:flex-shrink-0 gap-0.5 overflow-x-auto pb-1 sm:pb-0 border-b sm:border-b-0 border-slate-100 dark:border-slate-700">
           {TABS.map(t => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
               className={cn(
-                'sidebar-link w-full text-left dark:text-slate-400 dark:hover:bg-slate-700',
+                'sidebar-link whitespace-nowrap sm:w-full text-left dark:text-slate-400 dark:hover:bg-slate-700',
                 tab === t.id && 'active dark:!bg-brand-900/40 dark:!text-brand-400',
               )}
             >
@@ -171,7 +172,7 @@ export default function SettingsPage() {
               {t.label}
             </button>
           ))}
-          <div className="pt-2 border-t border-slate-100 dark:border-slate-700 mt-2">
+          <div className="hidden sm:block pt-2 border-t border-slate-100 dark:border-slate-700 mt-2">
             <button
               onClick={handleLogout}
               className="sidebar-link w-full text-left !text-red-500 hover:!bg-red-50 dark:hover:!bg-red-900/20"
@@ -182,7 +183,7 @@ export default function SettingsPage() {
         </nav>
 
         {/* Panel */}
-        <div className="flex-1 bg-white dark:bg-slate-800 rounded-xl shadow-card border border-slate-100 dark:border-slate-700 p-6">
+        <div className="flex-1 min-w-0 bg-white dark:bg-slate-800 rounded-xl shadow-card border border-slate-100 dark:border-slate-700 p-4 sm:p-6">
 
           {/* ── Profile ── */}
           {tab === 'profile' && (
@@ -328,7 +329,7 @@ export default function SettingsPage() {
               <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">Appearance</h2>
               <div>
                 <p className="text-xs font-medium text-slate-600 dark:text-slate-300 mb-3">Theme</p>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {THEME_OPTIONS.map(opt => (
                     <button
                       key={opt.value}
@@ -356,7 +357,6 @@ export default function SettingsPage() {
           )}
         </div>
       </div>
-    </div>
     </div>
   );
 }

@@ -133,10 +133,10 @@ export default function PomodoroPage() {
     <div className="max-w-2xl mx-auto animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+          <h1 className="text-fluid-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
             🍅 Pomodoro Focus
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-fluid-sm text-slate-500 dark:text-slate-400 mt-1">
             Stay focused with time-boxed sessions.
           </p>
         </div>
@@ -148,15 +148,15 @@ export default function PomodoroPage() {
       {/* Stats bar */}
       <div className="grid grid-cols-3 gap-3 mb-6">
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-3 text-center">
-          <p className="text-2xl font-bold text-brand-600 dark:text-brand-400">{todaySessions.filter(s => s.type === 'work').length}</p>
+          <p className="text-fluid-2xl font-bold text-brand-600 dark:text-brand-400">{todaySessions.filter(s => s.type === 'work').length}</p>
           <p className="text-xs text-slate-400 mt-0.5">Sessions today</p>
         </div>
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-3 text-center">
-          <p className="text-2xl font-bold text-emerald-600">{todayWorkMinutes}</p>
+          <p className="text-fluid-2xl font-bold text-emerald-600">{todayWorkMinutes}</p>
           <p className="text-xs text-slate-400 mt-0.5">Minutes focused</p>
         </div>
         <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 p-3 text-center">
-          <p className="text-2xl font-bold text-amber-500">{cycleCount % config.longAfter}/{config.longAfter}</p>
+          <p className="text-fluid-2xl font-bold text-amber-500">{cycleCount % config.longAfter}/{config.longAfter}</p>
           <p className="text-xs text-slate-400 mt-0.5">Until long break</p>
         </div>
       </div>
@@ -172,12 +172,12 @@ export default function PomodoroPage() {
       </div>
 
       {/* Main timer */}
-      <div className={cn('rounded-3xl p-8 flex flex-col items-center gap-6 transition-colors', cfg.bg)}>
+      <div className={cn('rounded-3xl p-4 sm:p-8 flex flex-col items-center gap-4 sm:gap-6 transition-colors', cfg.bg)}>
         {/* Ring */}
         <div className="relative">
           <TimerRing pct={pct} phase={phase} />
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className={cn('text-5xl font-bold tabular-nums', cfg.color)}>
+            <span className={cn('text-4xl sm:text-5xl font-bold tabular-nums', cfg.color)}>
               {pad(Math.floor(secondsLeft / 60))}:{pad(secondsLeft % 60)}
             </span>
             <span className={cn('text-sm font-medium mt-1', cfg.color)}>{cfg.label}</span>
@@ -245,7 +245,7 @@ export default function PomodoroPage() {
       {showConfig && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowConfig(false)} />
-          <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 p-6 w-80 animate-fade-in">
+          <div className="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 p-5 w-[calc(100vw-2rem)] max-w-sm sm:w-80 animate-fade-in">
             <div className="flex items-center justify-between mb-5">
               <h3 className="font-semibold text-slate-800 dark:text-slate-100">Timer Settings</h3>
               <button onClick={() => setShowConfig(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"><X size={18} /></button>
