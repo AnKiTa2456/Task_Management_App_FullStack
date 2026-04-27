@@ -94,7 +94,7 @@ function QuickCard({ icon, label, count, link, color }: { icon: React.ReactNode;
 
 export default function DashboardPage() {
   const { user } = useAppSelector(s => s.auth);
-  const { data: boards = [] } = useBoards();
+  useBoards(); // prefetch boards for stats
   const stats = useDashboardStats();
 
   const hour     = new Date().getHours();
